@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="BudgetEtu.Controls.BottomNavBar"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--
+        Barre de navigation du bas (Accueil · Budget · [+] · Alertes · Profil).
+        Les 4 onglets mènent aux écrans 3, 5, 6 et 7 ; le bouton (+) ouvre l'écran 4 (Saisie).
+    -->
+    <Border BackgroundColor="White"
+            Stroke="{StaticResource BorderBrush}"
+            StrokeThickness="1"
+            StrokeShape="RoundRectangle 20,20,0,0"
+            Padding="8,6,8,10">
+        <Border.Shadow>
+            <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.08" Radius="12" Offset="0,-3" />
+        </Border.Shadow>
+        <Grid ColumnDefinitions="*,*,Auto,*,*" ColumnSpacing="4">
+
+            <Label x:Name="HomeTab" Grid.Column="0" Text="Accueil" Style="{StaticResource NavLabel}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Dashboard" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Label x:Name="BudgetTab" Grid.Column="1" Text="Budget" Style="{StaticResource NavLabel}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Budgets" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Border Grid.Column="2"
+                    BackgroundColor="{StaticResource Primary}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 26"
+                    WidthRequest="52"
+                    HeightRequest="52"
+                    Margin="8,0"
+                    VerticalOptions="Center">
+                <Label Text="+" TextColor="White" FontSize="30" FontFamily="{StaticResource FontMedium}"
+                       HorizontalOptions="Center" VerticalOptions="Center" />
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnAddTapped" />
+                </Border.GestureRecognizers>
+            </Border>
+
+            <Label x:Name="AlertsTab" Grid.Column="3" Text="Alertes" Style="{StaticResource NavLabel}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Alerts" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Label x:Name="ProfileTab" Grid.Column="4" Text="Profil" Style="{StaticResource NavLabel}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Profile" />
+                </Label.GestureRecognizers>
+            </Label>
+
+        </Grid>
+    </Border>
+</ContentView>

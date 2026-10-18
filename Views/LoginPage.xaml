@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BudgetEtu.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BudgetEtu.Controls"
+    xmlns:vm="clr-namespace:BudgetEtu.ViewModels"
+    x:DataType="vm:LoginViewModel"
+    Title="Connexion"
+    Shell.NavBarIsVisible="False">
+
+    <!-- Windows / Mac : menu « Démo » en haut de la fenêtre (équivalent des 5 appuis sur le titre). Ignoré sur téléphone. -->
+    <ContentPage.MenuBarItems>
+        <MenuBarItem Text="Démo">
+            <MenuFlyoutItem Text="Simuler un état : hors ligne, erreur serveur, session expirée, aucune donnée…"
+                            Command="{Binding ShowSimulationMenuCommand}" />
+        </MenuBarItem>
+    </ContentPage.MenuBarItems>
+
+    <!-- Maquette 1_connexion -->
+    <Grid RowDefinitions="*,Auto" Padding="24,48,24,20">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="20">
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="BudgetEtu" Style="{StaticResource Title}">
+                        <Label.GestureRecognizers>
+                            <!-- Démo : 5 appuis = menu pour simuler hors ligne / erreur serveur -->
+                            <TapGestureRecognizer NumberOfTapsRequired="5" Command="{Binding ShowSimulationMenuCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="Gère tes FCFA en toute simplicité" Style="{StaticResource Subtitle}" />
+                </VerticalStackLayout>
+
+                <!-- Erreurs globales : identifiants incorrects, hors ligne, serveur -->
+                <controls:ErrorBanner Message="{Binding BannerMessage}" Margin="0,8,0,0" />
+
+                <controls:FormField
+                    Title="Adresse E-mail"
+                    Placeholder="etudiant@univ.cm"
+                    Keyboard="Email"
+                    Text="{Binding Email}"
+                    ErrorMessage="{Binding EmailError}" />
+
+                <controls:FormField
+                    Title="Mot de Passe"
+                    Placeholder="••••••••"
+                    IsPassword="True"
+                    Text="{Binding Password}"
+                    ErrorMessage="{Binding PasswordError}" />
+
+                <Label Text="Mot de passe oublié ?" Style="{StaticResource LinkLabel}" Padding="0,2">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToForgotPasswordCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <Button Text="Se connecter"
+                        Command="{Binding LoginCommand}"
+                        IsEnabled="{Binding IsNotBusy}" />
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Label Grid.Row="1" HorizontalOptions="Center" Padding="0,8">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Pas encore de compte ? " TextColor="{StaticResource TextMuted}" />
+                    <Span Text="S'inscrire" TextColor="{StaticResource Primary}" FontFamily="{StaticResource FontBold}" />
+                </FormattedString>
+            </Label.FormattedText>
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+    </Grid>
+</ContentPage>

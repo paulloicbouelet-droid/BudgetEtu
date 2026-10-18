@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BudgetEtu.Views.BudgetsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BudgetEtu.Controls"
+    xmlns:models="clr-namespace:BudgetEtu.Models"
+    xmlns:vm="clr-namespace:BudgetEtu.ViewModels"
+    x:DataType="vm:BudgetsViewModel"
+    Title="Budgets"
+    Shell.NavBarIsVisible="False">
+
+    <!-- Maquette 5_BudgetsCategorie -->
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- En-tête toujours visible : titre + choix du mois -->
+        <VerticalStackLayout Grid.Row="0" Padding="24,40,24,12" Spacing="0">
+            <Label Text="Budgets mensuels" Style="{StaticResource ScreenTitle}" />
+            <controls:DropDown
+                Title="Choisis un mois"
+                ItemsSource="{Binding Months}"
+                SelectedItem="{Binding SelectedMonth}"
+                HorizontalOptions="Start"
+                WidthRequest="190" />
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1">
+
+            <RefreshView IsVisible="{Binding IsContent}"
+                         Command="{Binding RefreshCommand}"
+                         IsRefreshing="{Binding IsRefreshing}">
+                <ScrollView>
+                    <VerticalStackLayout Padding="24,8,24,24" Spacing="0">
+
+                        <!-- Total du mois -->
+                        <Border Style="{StaticResource CardBorder}" Padding="18">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="{Binding TotalText}" Style="{StaticResource FieldLabel}" />
+                                <ProgressBar Progress="{Binding TotalProgress}">
+                                    <ProgressBar.Triggers>
+                                        <DataTrigger TargetType="ProgressBar" Binding="{Binding TotalIsWarning}" Value="True">
+                                            <Setter Property="ProgressColor" Value="{StaticResource Warning}" />
+                                        </DataTrigger>
+                                    </ProgressBar.Triggers>
+                                </ProgressBar>
+                                <Label Text="{Binding TotalRemainingText}" Style="{StaticResource Subtitle}" FontSize="13" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Label Text="Mes Catégories :" Style="{StaticResource SectionTitle}" Margin="0,28,0,14" />
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Categories}" Spacing="22">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:BudgetCategory">
+                                    <VerticalStackLayout Spacing="6">
+                                        <Label Text="{Binding Title}" Style="{StaticResource FieldLabel}" FontSize="15" />
+                                        <Label Text="{Binding SpentText}" />
+                                        <ProgressBar Progress="{Binding Progress}">
+                                            <ProgressBar.Triggers>
+                                                <DataTrigger TargetType="ProgressBar" Binding="{Binding IsWarning}" Value="True">
+                                                    <Setter Property="ProgressColor" Value="{StaticResource Warning}" />
+                                                </DataTrigger>
+                                            </ProgressBar.Triggers>
+                                        </ProgressBar>
+                                        <Label Text="{Binding RemainingText}" Style="{StaticResource Subtitle}" FontSize="13" />
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+            </RefreshView>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+
+            <controls:ErrorView
+                IsVisible="{Binding IsProblem}"
+                Icon="{Binding ProblemIcon}"
+                Title="{Binding ProblemTitle}"
+                Message="{Binding ProblemMessage}"
+                ActionText="{Binding ProblemActionText}"
+                ActionCommand="{Binding RunProblemActionCommand}" />
+        </Grid>
+
+        <controls:BottomNavBar Grid.Row="2" ActiveTab="Budgets" />
+    </Grid>
+</ContentPage>

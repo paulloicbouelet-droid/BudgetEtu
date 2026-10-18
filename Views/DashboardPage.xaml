@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BudgetEtu.Views.DashboardPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BudgetEtu.Controls"
+    xmlns:models="clr-namespace:BudgetEtu.Models"
+    xmlns:vm="clr-namespace:BudgetEtu.ViewModels"
+    x:DataType="vm:DashboardViewModel"
+    Title="Accueil"
+    Shell.NavBarIsVisible="False">
+
+    <!-- Windows / Mac : menu « Démo » en haut de la fenêtre (équivalent des 5 appuis sur le titre). Ignoré sur téléphone. -->
+    <ContentPage.MenuBarItems>
+        <MenuBarItem Text="Démo">
+            <MenuFlyoutItem Text="Simuler un état : hors ligne, erreur serveur, session expirée, aucune donnée…"
+                            Command="{Binding ShowSimulationMenuCommand}" />
+        </MenuBarItem>
+    </ContentPage.MenuBarItems>
+
+    <!-- Maquette 3_TableauDeBord -->
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- En-tête toujours visible -->
+        <VerticalStackLayout Grid.Row="0" Padding="24,40,24,12" Spacing="4">
+            <Label Text="{Binding Greeting}" Style="{StaticResource ScreenTitle}">
+                <Label.GestureRecognizers>
+                    <!-- Démo : 5 appuis = menu pour simuler les écrans d'erreur -->
+                    <TapGestureRecognizer NumberOfTapsRequired="5" Command="{Binding ShowSimulationMenuCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            <Label Text="Voici le résumé de ton budget" Style="{StaticResource Subtitle}" />
+        </VerticalStackLayout>
+
+        <!-- Zone de contenu : données, chargement ou écran d'erreur -->
+        <Grid Grid.Row="1">
+
+            <RefreshView IsVisible="{Binding IsContent}"
+                         Command="{Binding RefreshCommand}"
+                         IsRefreshing="{Binding IsRefreshing}">
+                <ScrollView>
+                    <VerticalStackLayout Padding="24,8,24,24" Spacing="0">
+
+                        <!-- Solde -->
+                        <Border BackgroundColor="{StaticResource PrimaryDark}"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 24"
+                                Padding="22,20">
+                            <Border.Shadow>
+                                <Shadow Brush="{StaticResource ShadowBrush}" Opacity="0.18" Radius="14" Offset="0,6" />
+                            </Border.Shadow>
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Solde actuel :" TextColor="White" Opacity="0.9" />
+                                <Label Text="{Binding BalanceText}" TextColor="White"
+                                       FontFamily="{StaticResource FontBold}" FontSize="30" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Revenus / Dépenses -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="16" Margin="0,20,0,0">
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="Revenus" Style="{StaticResource FieldLabel}" />
+                                <Border BackgroundColor="{StaticResource Income}" StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 16" Padding="14,16">
+                                    <Label Text="{Binding IncomeText}" TextColor="White"
+                                           FontFamily="{StaticResource FontMedium}" FontSize="14" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                <Label Text="Dépenses" Style="{StaticResource FieldLabel}" />
+                                <Border BackgroundColor="{StaticResource Expense}" StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 16" Padding="14,16">
+                                    <Label Text="{Binding ExpenseText}" TextColor="White"
+                                           FontFamily="{StaticResource FontMedium}" FontSize="14" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Transactions récentes -->
+                        <Label Text="Transactions récentes :" Style="{StaticResource SectionTitle}" Margin="0,32,0,12" />
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Recent}" Spacing="10">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:Transaction">
+                                    <Border Style="{StaticResource PillBorder}" HorizontalOptions="Start">
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="{Binding Category}" Style="{StaticResource PillText}" />
+                                            <Label Text="|" Style="{StaticResource PillText}" />
+                                            <Label Text="{Binding AmountText}" Style="{StaticResource PillText}"
+                                                   TextColor="{StaticResource Income}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsExpense}" Value="True">
+                                                        <Setter Property="TextColor" Value="{StaticResource Expense}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+            </RefreshView>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+
+            <controls:ErrorView
+                IsVisible="{Binding IsProblem}"
+                Icon="{Binding ProblemIcon}"
+                Title="{Binding ProblemTitle}"
+                Message="{Binding ProblemMessage}"
+                ActionText="{Binding ProblemActionText}"
+                ActionCommand="{Binding RunProblemActionCommand}" />
+        </Grid>
+
+        <controls:BottomNavBar Grid.Row="2" ActiveTab="Dashboard" />
+    </Grid>
+</ContentPage>

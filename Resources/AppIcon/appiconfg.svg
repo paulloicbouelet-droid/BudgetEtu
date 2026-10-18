@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" width="456" height="456" viewBox="0 0 456 456">
+    <!-- Pièce stylisée avec trois barres (budget) -->
+    <circle cx="228" cy="228" r="120" fill="none" stroke="#FFFFFF" stroke-width="22" />
+    <rect x="178" y="236" width="24" height="48" rx="6" fill="#FFFFFF" />
+    <rect x="216" y="200" width="24" height="84" rx="6" fill="#FFFFFF" />
+    <rect x="254" y="168" width="24" height="116" rx="6" fill="#FFFFFF" />
+</svg>

@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!--
+			Cibles de compilation :
+			- Windows : « Windows Machine » (aucun SDK Android requis). C'est la cible par défaut sur PC.
+			- Android : en option. Passe <WithAndroid> à true ci-dessous une fois le SDK Android installé.
+			- Mac : Android + iOS.
+		-->
+		<!-- Version de .NET : net9.0 fonctionne avec Visual Studio 2022 (17.12+) ; net10.0 exige Visual Studio 2026 (18.0+). -->
+		<Fx>net9.0</Fx>
+		<WithAndroid Condition="'$(WithAndroid)' == ''">false</WithAndroid>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(Fx)-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows')) and '$(WithAndroid)' == 'true'">$(TargetFrameworks);$(Fx)-android</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('osx'))">$(Fx)-android;$(Fx)-ios</TargetFrameworks>
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>BudgetEtu</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<NoWarn>$(NoWarn);CS0618</NoWarn>
+
+		<ApplicationTitle>BudgetEtu</ApplicationTitle>
+		<ApplicationId>com.budgetetu.app</ApplicationId>
+		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+
+		<!-- Windows : application « non empaquetée » (pas de signature MSIX, lancement direct avec F5) -->
+		<WindowsPackageType Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">None</WindowsPackageType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Icône et écran de démarrage -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#3A8F2B" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#FFFFFF" BaseSize="128,128" />
+
+		<!-- Police unique de l'application : Poppins (licence OFL) -->
+		<MauiFont Include="Resources\Fonts\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+	</ItemGroup>
+
+</Project>

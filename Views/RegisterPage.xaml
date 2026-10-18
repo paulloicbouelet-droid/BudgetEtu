@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BudgetEtu.Views.RegisterPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BudgetEtu.Controls"
+    xmlns:vm="clr-namespace:BudgetEtu.ViewModels"
+    x:DataType="vm:RegisterViewModel"
+    Title="Inscription"
+    Shell.NavBarIsVisible="False">
+
+    <!-- Maquette 2_inscription -->
+    <Grid RowDefinitions="*,Auto" Padding="24,48,24,20">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="18">
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Créer un compte" Style="{StaticResource Title}" />
+                    <Label Text="Inscris-toi pour suivre tes dépenses" Style="{StaticResource Subtitle}" />
+                </VerticalStackLayout>
+
+                <controls:ErrorBanner Message="{Binding BannerMessage}" Margin="0,4,0,0" />
+
+                <controls:FormField
+                    Title="Nom complet"
+                    Placeholder="Paul Loïc"
+                    Text="{Binding FullName}"
+                    ErrorMessage="{Binding FullNameError}" />
+
+                <controls:FormField
+                    Title="Adresse E-mail"
+                    Placeholder="etudiant@univ.cm"
+                    Keyboard="Email"
+                    Text="{Binding Email}"
+                    ErrorMessage="{Binding EmailError}" />
+
+                <controls:FormField
+                    Title="Mot de Passe"
+                    Placeholder="••••••••"
+                    IsPassword="True"
+                    Text="{Binding Password}"
+                    ErrorMessage="{Binding PasswordError}" />
+
+                <controls:FormField
+                    Title="Confirmer le mot de passe"
+                    Placeholder="••••••••"
+                    IsPassword="True"
+                    Text="{Binding ConfirmPassword}"
+                    ErrorMessage="{Binding ConfirmPasswordError}" />
+
+                <Button Text="S'inscrire"
+                        Command="{Binding RegisterCommand}"
+                        IsEnabled="{Binding IsNotBusy}"
+                        Margin="0,6,0,0" />
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Label Grid.Row="1" HorizontalOptions="Center" Padding="0,8">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Déjà un compte ? " TextColor="{StaticResource TextMuted}" />
+                    <Span Text="Se connecter" TextColor="{StaticResource Primary}" FontFamily="{StaticResource FontBold}" />
+                </FormattedString>
+            </Label.FormattedText>
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding GoToLoginCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+    </Grid>
+</ContentPage>

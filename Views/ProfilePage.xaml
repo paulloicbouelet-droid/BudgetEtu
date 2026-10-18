@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BudgetEtu.Views.ProfilePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BudgetEtu.Controls"
+    xmlns:vm="clr-namespace:BudgetEtu.ViewModels"
+    x:DataType="vm:ProfileViewModel"
+    Title="Profil"
+    Shell.NavBarIsVisible="False">
+
+    <!-- Windows / Mac : menu « Démo » en haut de la fenêtre (équivalent des 5 appuis sur le titre). Ignoré sur téléphone. -->
+    <ContentPage.MenuBarItems>
+        <MenuBarItem Text="Démo">
+            <MenuFlyoutItem Text="Simuler un état : hors ligne, erreur serveur, session expirée, aucune donnée…"
+                            Command="{Binding ShowSimulationMenuCommand}" />
+        </MenuBarItem>
+    </ContentPage.MenuBarItems>
+
+    <!-- Maquette 7_Profil -->
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,40,24,24" Spacing="0">
+
+                <!-- 5 appuis sur le titre : menu caché pour simuler les écrans d'erreur (démo) -->
+                <Label Text="Mon Profil" Style="{StaticResource ScreenTitle}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="5" Command="{Binding ShowSimulationMenuCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <!-- Avatar -->
+                <Border BackgroundColor="{StaticResource Surface}" StrokeThickness="0" StrokeShape="RoundRectangle 56"
+                        WidthRequest="112" HeightRequest="112" HorizontalOptions="Center" Margin="0,16,0,0">
+                    <Label Text="{Binding Initials}" FontFamily="{StaticResource FontBold}" FontSize="40"
+                           HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <Label Text="{Binding FullName}" Style="{StaticResource SectionTitle}" FontSize="18"
+                       HorizontalOptions="Center" Margin="0,14,0,0" />
+                <Label Text="{Binding Email}" Style="{StaticResource Subtitle}" HorizontalOptions="Center" />
+
+                <!-- Préférences -->
+                <Label Text="PRÉFÉRENCES" Style="{StaticResource SectionTitle}" CharacterSpacing="0.5" Margin="0,32,0,10" />
+                <Border Style="{StaticResource CardBorder}" Padding="18,6">
+                    <VerticalStackLayout>
+                        <Grid ColumnDefinitions="*,Auto" MinimumHeightRequest="48">
+                            <Label Text="Devise" VerticalOptions="Center" />
+                            <controls:DropDown Grid.Column="1" WidthRequest="130" TextAlignment="End"
+                                               Title="Devise"
+                                               ItemsSource="{Binding Currencies}"
+                                               SelectedItem="{Binding SelectedCurrency}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" MinimumHeightRequest="48">
+                            <Label Text="Période du budget" VerticalOptions="Center" />
+                            <controls:DropDown Grid.Column="1" WidthRequest="150" TextAlignment="End"
+                                               Title="Période"
+                                               ItemsSource="{Binding Periods}"
+                                               SelectedItem="{Binding SelectedPeriod}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Sécurité & compte -->
+                <Label Text="SÉCURITÉ &amp; COMPTE" Style="{StaticResource SectionTitle}" CharacterSpacing="0.5" Margin="0,28,0,10" />
+                <Border Style="{StaticResource CardBorder}" Padding="18,6">
+                    <VerticalStackLayout>
+                        <Grid ColumnDefinitions="*,Auto" MinimumHeightRequest="48">
+                            <Label Text="Changer le mot de passe" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="›" FontSize="22" VerticalOptions="Center"
+                                   TextColor="{StaticResource TextMuted}" />
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ChangePasswordCommand}" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto" MinimumHeightRequest="48">
+                            <Label Text="Notifications push" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding PushNotificationsEnabled}" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Button Text="Se déconnecter" Style="{StaticResource DangerButton}"
+                        Command="{Binding LogoutCommand}" Margin="0,32,0,0" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <controls:BottomNavBar Grid.Row="1" ActiveTab="Profile" />
+    </Grid>
+</ContentPage>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BudgetEtu.Views.AlertsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BudgetEtu.Controls"
+    xmlns:models="clr-namespace:BudgetEtu.Models"
+    xmlns:vm="clr-namespace:BudgetEtu.ViewModels"
+    x:DataType="vm:AlertsViewModel"
+    Title="Alertes"
+    Shell.NavBarIsVisible="False">
+
+    <!-- Maquette 6_Alertes -->
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <VerticalStackLayout Grid.Row="0" Padding="24,40,24,12" Spacing="4">
+            <Label Text="Alertes &amp; Notifications" Style="{StaticResource ScreenTitle}" />
+            <Label Text="Reste informé sur la santé de ton budget" Style="{StaticResource Subtitle}" />
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1">
+
+            <RefreshView IsVisible="{Binding IsContent}"
+                         Command="{Binding RefreshCommand}"
+                         IsRefreshing="{Binding IsRefreshing}">
+                <ScrollView>
+                    <VerticalStackLayout Padding="24,8,24,24" Spacing="16"
+                                         BindableLayout.ItemsSource="{Binding Alerts}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:AlertItem">
+                                <!-- Carte avec un liseré de couleur : orange = attention, vert = bravo, gris-bleu = info -->
+                                <Border Style="{StaticResource CardBorder}" Padding="0">
+                                    <Grid ColumnDefinitions="6,*">
+                                        <BoxView Grid.Column="0" Color="{StaticResource Info}">
+                                            <BoxView.Triggers>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding IsWarning}" Value="True">
+                                                    <Setter Property="Color" Value="{StaticResource Warning}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="BoxView" Binding="{Binding IsSuccess}" Value="True">
+                                                    <Setter Property="Color" Value="{StaticResource Primary}" />
+                                                </DataTrigger>
+                                            </BoxView.Triggers>
+                                        </BoxView>
+                                        <VerticalStackLayout Grid.Column="1" Padding="16,14" Spacing="4">
+                                            <Label Text="{Binding HeadingText}" Style="{StaticResource FieldLabel}" FontSize="15" />
+                                            <Label Text="{Binding Message}" />
+                                            <Label Text="{Binding WhenText}" Style="{StaticResource Subtitle}" FontSize="12" Margin="0,4,0,0" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </RefreshView>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"
+                               HorizontalOptions="Center" VerticalOptions="Center" />
+
+            <controls:ErrorView
+                IsVisible="{Binding IsProblem}"
+                Icon="{Binding ProblemIcon}"
+                Title="{Binding ProblemTitle}"
+                Message="{Binding ProblemMessage}"
+                ActionText="{Binding ProblemActionText}"
+                ActionCommand="{Binding RunProblemActionCommand}" />
+        </Grid>
+
+        <controls:BottomNavBar Grid.Row="2" ActiveTab="Alerts" />
+    </Grid>
+</ContentPage>

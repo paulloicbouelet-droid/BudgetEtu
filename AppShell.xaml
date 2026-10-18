@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="BudgetEtu.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:BudgetEtu.Views"
+    FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False"
+    Shell.TabBarIsVisible="False"
+    BackgroundColor="{StaticResource Background}">
+
+    <!--
+        NAVIGATION DÉDUITE DE L'ORDRE DES MAQUETTES
+
+          1 Connexion  ──[Se connecter]──────────────▶ 3 Tableau de bord
+                       ──[S'inscrire]────────────────▶ 2 Inscription ──[S'inscrire]──▶ 3 Tableau de bord
+                       ──[Mot de passe oublié ?]─────▶ 8 Réinitialisation ──[Retour]──▶ 1 Connexion
+          3 Tableau de bord ─ barre du bas ──────────▶ Accueil · 5 Budgets · 6 Alertes · 7 Profil
+                            ─ bouton (+) ────────────▶ 4 Saisie (modale, route « Transaction »)
+                                                 ├─ Enregistrer ─▶ 3 Accueil (schéma : « avant de revenir à l'accueil »)
+                                                 └─ ✕ (annuler) ─▶ écran d'origine   // déduit : le schéma ne le précise pas
+          7 Profil ─[Se déconnecter]─────────────────▶ 1 Connexion
+
+        Routes absolues "//Nom" = changement de zone (pas de retour arrière vers la connexion).
+        La barre du bas est un contrôle personnalisé (Controls/BottomNavBar) : la TabBar native
+        ne permet pas le bouton (+) central des maquettes.
+    -->
+    <ShellContent Route="Login" ContentTemplate="{DataTemplate views:LoginPage}" />
+    <ShellContent Route="Register" ContentTemplate="{DataTemplate views:RegisterPage}" />
+    <ShellContent Route="ForgotPassword" ContentTemplate="{DataTemplate views:ForgotPasswordPage}" />
+
+    <ShellContent Route="Dashboard" ContentTemplate="{DataTemplate views:DashboardPage}" />
+    <ShellContent Route="Budgets" ContentTemplate="{DataTemplate views:BudgetsPage}" />
+    <ShellContent Route="Alerts" ContentTemplate="{DataTemplate views:AlertsPage}" />
+    <ShellContent Route="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" />
+
+</Shell>

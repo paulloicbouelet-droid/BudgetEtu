@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="BudgetEtu.Controls.ErrorBanner"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="Root"
+    IsVisible="False">
+
+    <!-- Bandeau de message en haut d'un formulaire : rouge (erreur) ou vert (succès). -->
+    <Border x:Name="Box" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12,10">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+            <Label x:Name="IconLabel" Grid.Column="0" Text="⚠️" VerticalOptions="Start" />
+            <Label x:Name="MessageLabel" Grid.Column="1" Text="{Binding Message, Source={x:Reference Root}}"
+                   FontSize="13" />
+        </Grid>
+    </Border>
+</ContentView>

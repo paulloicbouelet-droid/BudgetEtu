@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="BudgetEtu.Controls.DropDown"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="Root">
+
+    <!-- Liste déroulante avec le petit triangle ▾ des maquettes. -->
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+        <Picker
+            x:Name="PickerControl"
+            Grid.Column="0"
+            VerticalOptions="Center"
+            Title="{Binding Title, Source={x:Reference Root}}"
+            HorizontalTextAlignment="{Binding TextAlignment, Source={x:Reference Root}}"
+            ItemsSource="{Binding ItemsSource, Source={x:Reference Root}}"
+            SelectedItem="{Binding SelectedItem, Source={x:Reference Root}, Mode=TwoWay}" />
+        <Label Grid.Column="1" Text="▾" VerticalOptions="Center" FontSize="12"
+               TextColor="{StaticResource TextMuted}" InputTransparent="True" />
+    </Grid>
+</ContentView>

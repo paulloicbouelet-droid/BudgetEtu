@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--
+        ============================================================================
+        AppStyles.xaml : UNIQUE source de vérité pour les couleurs, la police et les styles.
+        Aucun écran ne doit écrire de couleur ou de police « en dur » : il utilise ces ressources.
+
+        Corrections apportées aux maquettes (qui étaient incohérentes) :
+          • 4 verts différents (#4CAF1A, #3A8F2B, #72A83A, #2E7D1F)  ->  Primary #3A8F2B (+ PrimaryDark pour la carte « Solde »)
+          • carte « Solde » rose (#C27373) et pastille « Revenu » marron  ->  vert de la marque / neutre
+          • liens bleus  ->  Primary
+          • polices mélangées (serif pour les libellés, sans-serif pour les titres)  ->  Poppins : alias FontTitle (titres) et FontBody (corps), + FontMedium/FontBold pour l'emphase
+          • champs : un style « contour noir » et un style « fond beige »  ->  un seul style (fond doux + contour fin)
+        ============================================================================
+    -->
+
+    <!--
+        PALETTE UNIFIÉE BudgetEtu
+        Les maquettes utilisaient 4 verts différents, un rose et un marron.
+        Tout est ramené ici à une seule famille verte + rouge (dépenses / erreurs) + neutres chauds.
+    -->
+
+    <!-- Marque -->
+    <Color x:Key="Primary">#3A8F2B</Color>
+    <Color x:Key="PrimaryDark">#2B6E21</Color>
+    <Color x:Key="PrimarySoft">#E7F3E3</Color>
+    <Color x:Key="PrimaryDisabled">#A9CFA2</Color>
+
+    <!-- Sémantique -->
+    <Color x:Key="Income">#2E9E2E</Color>
+    <Color x:Key="Expense">#D32F2F</Color>
+    <Color x:Key="Error">#B3261E</Color>
+    <Color x:Key="ErrorSoft">#FDECEA</Color>
+    <Color x:Key="Warning">#E0A100</Color>
+    <Color x:Key="WarningSoft">#FFF6DA</Color>
+    <Color x:Key="Info">#5B7C99</Color>
+
+    <!-- Neutres -->
+    <Color x:Key="Background">#FFFFFF</Color>
+    <Color x:Key="Text">#1B1B1B</Color>
+    <Color x:Key="TextMuted">#6F6868</Color>
+    <Color x:Key="TextHint">#9A9292</Color>
+    <Color x:Key="Surface">#EEEBEB</Color>
+    <Color x:Key="InputBackground">#F4F1F1</Color>
+    <Color x:Key="Border">#D8D2D2</Color>
+
+    <!-- Pinceaux (utilisés pour les contours Border.Stroke) -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource Border}" />
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}" />
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
+    <SolidColorBrush x:Key="TransparentBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="ShadowBrush" Color="#000000" />
+
+    <!--
+        POLICE UNIQUE : Poppins
+        Les maquettes mélangeaient une police à empattements (labels) et une sans-serif (titres).
+        Ici, tout passe par ces 3 graisses. Pour changer de police, il suffit de modifier
+        les fichiers dans Resources/Fonts et les alias dans MauiProgram.cs.
+    -->
+    <!-- Titres : change uniquement cette ligne (et ajoute le fichier .ttf + son alias dans MauiProgram.cs) pour une autre police de titre. -->
+    <x:String x:Key="FontTitle">PoppinsBold</x:String>
+    <!-- Corps de texte -->
+    <x:String x:Key="FontBody">PoppinsRegular</x:String>
+    <x:String x:Key="FontMedium">PoppinsMedium</x:String>
+    <x:String x:Key="FontBold">PoppinsBold</x:String>
+
+    <!-- ===== Pages ===== -->
+    <Style TargetType="Page" ApplyToDerivedTypes="True">
+        <Setter Property="BackgroundColor" Value="{StaticResource Background}" />
+    </Style>
+
+    <!-- ===== Textes (style implicite) ===== -->
+    <Style TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Text}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="Title" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Text}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontTitle}" />
+        <Setter Property="FontSize" Value="30" />
+    </Style>
+
+    <Style x:Key="ScreenTitle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Text}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontTitle}" />
+        <Setter Property="FontSize" Value="24" />
+    </Style>
+
+    <Style x:Key="Subtitle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="SectionTitle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Text}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontTitle}" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <Style x:Key="FieldLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Text}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontMedium}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="FieldError" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Error}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="LinkLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource Primary}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontMedium}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="PillText" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontMedium}" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style x:Key="NavLabel" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="Padding" Value="0,12" />
+    </Style>
+
+    <!-- ===== Boutons ===== -->
+    <Style TargetType="Button">
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBold}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="Padding" Value="20,0" />
+        <Setter Property="VisualStateManager.VisualStateGroups">
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="CommonStates">
+                    <VisualState x:Name="Normal" />
+                    <VisualState x:Name="Disabled">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryDisabled}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DangerButton" TargetType="Button">
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Expense}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBold}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="HeightRequest" Value="52" />
+    </Style>
+
+    <Style x:Key="ChipButton" TargetType="Button">
+        <Setter Property="TextColor" Value="{StaticResource TextMuted}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontMedium}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="CornerRadius" Value="26" />
+        <Setter Property="HeightRequest" Value="52" />
+    </Style>
+
+    <!-- ===== Champs ===== -->
+    <Style TargetType="Entry">
+        <Setter Property="TextColor" Value="{StaticResource Text}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource TextHint}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+    </Style>
+
+    <Style TargetType="Picker">
+        <Setter Property="TextColor" Value="{StaticResource Text}" />
+        <Setter Property="TitleColor" Value="{StaticResource TextHint}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+    </Style>
+
+    <Style TargetType="DatePicker">
+        <Setter Property="TextColor" Value="{StaticResource Text}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBody}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+    </Style>
+
+    <Style TargetType="Switch">
+        <Setter Property="OnColor" Value="{StaticResource Primary}" />
+        <Setter Property="ThumbColor" Value="White" />
+    </Style>
+
+    <Style TargetType="ProgressBar">
+        <Setter Property="ProgressColor" Value="{StaticResource Primary}" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+    </Style>
+
+    <Style TargetType="ActivityIndicator">
+        <Setter Property="Color" Value="{StaticResource Primary}" />
+    </Style>
+
+    <!-- ===== Conteneurs ===== -->
+    <Style x:Key="InputBorder" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource InputBackground}" />
+        <Setter Property="Stroke" Value="{StaticResource BorderBrush}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="MinimumHeightRequest" Value="52" />
+    </Style>
+
+    <Style x:Key="CardBorder" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <Style x:Key="PillBorder" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource Surface}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 20" />
+        <Setter Property="Padding" Value="16,9" />
+    </Style>
+
+</ResourceDictionary>

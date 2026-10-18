@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BudgetEtu.Views.TransactionPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BudgetEtu.Controls"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:vm="clr-namespace:BudgetEtu.ViewModels"
+    x:DataType="vm:TransactionViewModel"
+    Title="Nouvelle transaction"
+    Shell.NavBarIsVisible="False"
+    Shell.PresentationMode="ModalAnimated">
+
+    <!-- Maquettes 4_SaisieTransaction et 4_SaisieTransaction_Erreur -->
+    <Grid RowDefinitions="Auto,*,Auto" Padding="24,32,24,20" RowSpacing="12">
+
+        <!-- En-tête : titre + croix rouge de fermeture -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <Label Text="Nouvelle transaction" Style="{StaticResource ScreenTitle}" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="✕" TextColor="{StaticResource Expense}" FontSize="22" Padding="12,6">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="18">
+
+                <controls:ErrorBanner Message="{Binding BannerMessage}" />
+
+                <!-- Type de transaction -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Type de transaction :" Style="{StaticResource FieldLabel}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+                        <Button Grid.Column="0" Text="Dépense" Style="{StaticResource ChipButton}"
+                                Command="{Binding SelectExpenseCommand}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsExpense}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                    <Setter Property="TextColor" Value="White" />
+                                    <Setter Property="FontFamily" Value="{StaticResource FontBold}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                        <Button Grid.Column="1" Text="Revenu" Style="{StaticResource ChipButton}"
+                                Command="{Binding SelectIncomeCommand}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsIncome}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                    <Setter Property="TextColor" Value="White" />
+                                    <Setter Property="FontFamily" Value="{StaticResource FontBold}" />
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!-- Montant : en erreur, affiche « (!) » + « ⚠️ Le montant doit être supérieur à 0 FCFA » -->
+                <controls:FormField
+                    Title="Montant (FCFA) :"
+                    Placeholder="0"
+                    Suffix="FCFA"
+                    Keyboard="Numeric"
+                    Text="{Binding AmountText}"
+                    ErrorMessage="{Binding AmountError}" />
+
+                <!-- Catégorie -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Catégorie :" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource InputBorder}">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding HasCategoryError}" Value="True">
+                                <Setter Property="Stroke" Value="{StaticResource ErrorBrush}" />
+                                <Setter Property="BackgroundColor" Value="{StaticResource ErrorSoft}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <controls:DropDown
+                            Title="Choisis une catégorie"
+                            ItemsSource="{Binding Categories}"
+                            SelectedItem="{Binding SelectedCategory}" />
+                    </Border>
+                    <Label Text="{Binding CategoryError, StringFormat='⚠️ {0}'}"
+                           Style="{StaticResource FieldError}"
+                           IsVisible="{Binding HasCategoryError}" />
+                </VerticalStackLayout>
+
+                <controls:FormField
+                    Title="Motif :"
+                    Placeholder="Achats au marché"
+                    Text="{Binding Note}"
+                    ErrorMessage="{Binding NoteError}" />
+
+                <!-- Date -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Date :" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource InputBorder}">
+                        <DatePicker Date="{Binding Date}" Format="dd/MM/yyyy"
+                                    MaximumDate="{x:Static sys:DateTime.Today}"
+                                    VerticalOptions="Center" />
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="8">
+            <Button Text="Enregistrer la transaction"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsNotBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

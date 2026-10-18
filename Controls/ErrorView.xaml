@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="BudgetEtu.Controls.ErrorView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="Root">
+
+    <!--
+        Écran d'état plein cadre, réutilisé pour : pas de connexion, erreur serveur,
+        session expirée et états « aucune donnée ».
+    -->
+    <VerticalStackLayout Padding="32,0" Spacing="14" VerticalOptions="Center" HorizontalOptions="Fill">
+
+        <Border BackgroundColor="{StaticResource PrimarySoft}" StrokeThickness="0" StrokeShape="RoundRectangle 48"
+                WidthRequest="96" HeightRequest="96" HorizontalOptions="Center">
+            <Label Text="{Binding Icon, Source={x:Reference Root}}" FontSize="40"
+                   HorizontalOptions="Center" VerticalOptions="Center" />
+        </Border>
+
+        <Label Text="{Binding Title, Source={x:Reference Root}}" Style="{StaticResource SectionTitle}"
+               FontSize="20" HorizontalTextAlignment="Center" Margin="0,8,0,0" />
+
+        <Label Text="{Binding Message, Source={x:Reference Root}}" Style="{StaticResource Subtitle}"
+               HorizontalTextAlignment="Center" />
+
+        <Button Text="{Binding ActionText, Source={x:Reference Root}}"
+                Command="{Binding ActionCommand, Source={x:Reference Root}}"
+                IsVisible="{Binding HasAction, Source={x:Reference Root}}"
+                HorizontalOptions="Center" Margin="0,12,0,0" />
+    </VerticalStackLayout>
+</ContentView>

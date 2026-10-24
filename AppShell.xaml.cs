@@ -10,5 +10,9 @@ public partial class AppShell : Shell
 
         // Écran 4_Saisie : page modale ouverte par le bouton (+).
         Routing.RegisterRoute("Transaction", typeof(TransactionPage));
+
+        // Écrans ajoutés : formulaire d'enveloppe de budget et changement de mot de passe.
+        Routing.RegisterRoute("BudgetForm", typeof(BudgetFormPage));
+        Routing.RegisterRoute("ChangePassword", typeof(ChangePasswordPage));
     }
 }

@@ -54,7 +54,7 @@ public class ApiBudgetService : IBudgetService
         var dto = await _api.GetAsync<ApiBudgetOverview>($"api/budgets?month={month}");
 
         var categories = dto.Categories
-            .Select(b => new BudgetCategory { Emoji = b.Emoji, Name = b.Name, Limit = b.Limit, Spent = b.Spent })
+            .Select(b => new BudgetCategory { Id = b.Id, Emoji = b.Emoji, Name = b.Name, Limit = b.Limit, Spent = b.Spent })
             .ToList();
 
         return new BudgetOverview(categories);
@@ -97,6 +97,35 @@ public class ApiBudgetService : IBudgetService
             note = transaction.Note,
             date = transaction.Date.Date
         });
+    }
+
+    public async Task DeleteTransactionAsync(Guid id)
+    {
+        await Simulation.EnterAsync();
+        await _api.DeleteAsync($"api/transactions/{id}");
+    }
+
+    public async Task CreateBudgetAsync(string emoji, string name, decimal monthlyLimit)
+    {
+        await Simulation.EnterAsync();
+
+        // Si la démo était en mode « aucune donnée », la nouvelle enveloppe la fait réapparaître.
+        if (Simulation.Scenario == DemoScenario.Empty)
+            Simulation.Scenario = DemoScenario.Normal;
+
+        await _api.PostAsync("api/budgets", new { emoji, name = name.Trim(), monthlyLimit });
+    }
+
+    public async Task UpdateBudgetAsync(Guid id, string emoji, string name, decimal monthlyLimit)
+    {
+        await Simulation.EnterAsync();
+        await _api.PutAsync($"api/budgets/{id}", new { emoji, name = name.Trim(), monthlyLimit });
+    }
+
+    public async Task DeleteBudgetAsync(Guid id)
+    {
+        await Simulation.EnterAsync();
+        await _api.DeleteAsync($"api/budgets/{id}");
     }
 
     // ----- Conversions -----

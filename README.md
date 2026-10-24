@@ -110,10 +110,13 @@ Chaque utilisateur ne voit que ses propres données.
 
 Les maquettes ne sont pas cohérentes entre elles (Accueil : 50 000 FCFA de dépenses, Budgets : 75 000 FCFA dépensés). Avec un vrai serveur, tout est calculé à partir des mêmes transactions : le compte de démo affiche donc **75 000 FCFA** de dépenses et un solde de **125 000 FCFA** sur l'Accueil, et les budgets des maquettes (Nourriture 45 000 / 50 000, Transport 15 000 / 30 000, Logement 15 000 / 20 000).
 
+### Fonctionnalités ajoutées après le branchement
+
+- **Changer le mot de passe** : Profil › « Changer le mot de passe » (`Views/ChangePasswordPage.xaml`, `ChangePasswordViewModel`, route serveur `POST /api/me/change-password`).
+- **Enveloppes de budget** : écran Budgets › « + Nouvelle enveloppe » pour créer, toucher une enveloppe pour la modifier ou la supprimer (`Views/BudgetFormPage.xaml`, `BudgetFormViewModel`, routes `POST` / `PUT` / `DELETE /api/budgets`).
+- **Supprimer une transaction** : icône 🗑 à côté de chaque transaction récente de l'Accueil, avec confirmation (`DELETE /api/transactions/{id}`). Le solde et les budgets sont recalculés.
+
 ### Pas encore fait
 
-- Écran de changement de mot de passe (la route `POST /api/me/change-password` existe, pas encore l'écran) ;
-- écrans pour créer / modifier / supprimer une enveloppe de budget (les routes existent) ;
-- suppression d'une transaction depuis l'application (la route existe) ;
 - envoi réel du lien « mot de passe oublié » par e-mail ;
 - hébergement du serveur en ligne.

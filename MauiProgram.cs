@@ -50,6 +50,8 @@ public static class MauiProgram
         builder.Services.AddTransient<AlertsViewModel>();
         builder.Services.AddTransient<ProfileViewModel>();
         builder.Services.AddTransient<TransactionViewModel>();
+        builder.Services.AddTransient<BudgetFormViewModel>();
+        builder.Services.AddTransient<ChangePasswordViewModel>();
 
         // Pages
         builder.Services.AddTransient<LoginPage>();
@@ -60,6 +62,8 @@ public static class MauiProgram
         builder.Services.AddTransient<AlertsPage>();
         builder.Services.AddTransient<ProfilePage>();
         builder.Services.AddTransient<TransactionPage>();
+        builder.Services.AddTransient<BudgetFormPage>();
+        builder.Services.AddTransient<ChangePasswordPage>();
 
         return builder.Build();
     }
@@ -81,7 +85,7 @@ public static class MauiProgram
         Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, _) => Clear(handler.PlatformView));
         Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, _) => Clear(handler.PlatformView));
 #elif WINDOWS
-                // WinUI dessine sa propre bordure/fond sur les champs : on les rend transparents,
+        // WinUI dessine sa propre bordure/fond sur les champs : on les rend transparents,
         // le cadre arrondi (Border) des maquettes les remplace.
         // Purement cosmétique : toute erreur ici est ignorée, pour ne jamais empêcher l'ouverture d'un écran.
         static void Flatten(Microsoft.UI.Xaml.Controls.Control control, params string[] prefixes)
@@ -101,6 +105,7 @@ public static class MauiProgram
             foreach (var prefix in prefixes)
             foreach (var state in new[] { "", "PointerOver", "Pressed", "Focused", "Disabled" })
             {
+                // Un pinceau neuf par clé : on ne partage pas le même objet entre plusieurs entrées.
                 TrySet(control.Resources, $"{prefix}Background{state}", NewTransparent());
                 TrySet(control.Resources, $"{prefix}BorderBrush{state}", NewTransparent());
             }

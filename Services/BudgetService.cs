@@ -12,6 +12,11 @@ public interface IBudgetService
     Task<BudgetOverview> GetBudgetsAsync(int monthIndex);
     Task<IReadOnlyList<AlertItem>> GetAlertsAsync();
     Task AddTransactionAsync(Transaction transaction);
+    Task DeleteTransactionAsync(Guid id);
+
+    Task CreateBudgetAsync(string emoji, string name, decimal monthlyLimit);
+    Task UpdateBudgetAsync(Guid id, string emoji, string name, decimal monthlyLimit);
+    Task DeleteBudgetAsync(Guid id);
 }
 
 /// <summary>
@@ -87,6 +92,7 @@ public class BudgetService : IBudgetService
         // Mois courant : données réelles. Mois précédents : valeurs fictives déterministes.
         var categories = _currentBudgets.Select((b, i) => new BudgetCategory
         {
+            Id = b.Id,
             Emoji = b.Emoji,
             Name = b.Name,
             Limit = b.Limit,
@@ -124,5 +130,85 @@ public class BudgetService : IBudgetService
             if (budget is not null)
                 budget.Spent += transaction.Amount;
         }
+    }
+
+    public async Task DeleteTransactionAsync(Guid id)
+    {
+        await Simulation.EnterAsync();
+
+        var transaction = _transactions.FirstOrDefault(t => t.Id == id);
+        if (transaction is null)
+            throw new AppException(ErrorKind.Validation, "Cette transaction n'existe plus.");
+
+        _transactions.Remove(transaction);
+
+        // Dépense du mois courant : on rend l'argent à l'enveloppe correspondante.
+        var today = DateTime.Today;
+        if (transaction.IsExpense && transaction.Date.Year == today.Year && transaction.Date.Month == today.Month)
+        {
+            var budget = FindBudget(transaction.Category);
+            if (budget is not null)
+                budget.Spent = Math.Max(0, budget.Spent - transaction.Amount);
+        }
+    }
+
+    public async Task CreateBudgetAsync(string emoji, string name, decimal monthlyLimit)
+    {
+        await Simulation.EnterAsync();
+
+        if (Simulation.Scenario == DemoScenario.Empty)
+            Simulation.Scenario = DemoScenario.Normal;
+
+        _currentBudgets.Add(new BudgetCategory
+        {
+            Emoji = string.IsNullOrWhiteSpace(emoji) ? "💰" : emoji.Trim(),
+            Name = name.Trim(),
+            Limit = monthlyLimit,
+            Spent = SpentThisMonth(name.Trim())
+        });
+    }
+
+    public async Task UpdateBudgetAsync(Guid id, string emoji, string name, decimal monthlyLimit)
+    {
+        await Simulation.EnterAsync();
+
+        var index = _currentBudgets.FindIndex(b => b.Id == id);
+        if (index < 0)
+            throw new AppException(ErrorKind.Validation, "Cette enveloppe n'existe plus.");
+
+        var old = _currentBudgets[index];
+        var cleanName = name.Trim();
+
+        _currentBudgets[index] = new BudgetCategory
+        {
+            Id = old.Id,
+            Emoji = string.IsNullOrWhiteSpace(emoji) ? old.Emoji : emoji.Trim(),
+            Name = cleanName,
+            Limit = monthlyLimit,
+            Spent = string.Equals(old.Name, cleanName, StringComparison.OrdinalIgnoreCase)
+                ? old.Spent
+                : SpentThisMonth(cleanName)
+        };
+    }
+
+    public async Task DeleteBudgetAsync(Guid id)
+    {
+        await Simulation.EnterAsync();
+
+        if (_currentBudgets.RemoveAll(b => b.Id == id) == 0)
+            throw new AppException(ErrorKind.Validation, "Cette enveloppe n'existe plus.");
+    }
+
+    private BudgetCategory? FindBudget(string transactionCategory)
+        => _currentBudgets.FirstOrDefault(b =>
+            transactionCategory.StartsWith(b.Name, StringComparison.OrdinalIgnoreCase));
+
+    private decimal SpentThisMonth(string budgetName)
+    {
+        var today = DateTime.Today;
+        return _transactions
+            .Where(t => t.IsExpense && t.Date.Year == today.Year && t.Date.Month == today.Month
+                        && t.Category.StartsWith(budgetName, StringComparison.OrdinalIgnoreCase))
+            .Sum(t => t.Amount);
     }
 }

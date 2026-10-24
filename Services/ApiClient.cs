@@ -48,6 +48,18 @@ public class ApiClient
         using var response = await SendAsync(HttpMethod.Post, path, body, anonymous);
     }
 
+    /// <summary>PUT sans réponse attendue (204) : modification d'un élément existant.</summary>
+    public async Task PutAsync(string path, object body)
+    {
+        using var response = await SendAsync(HttpMethod.Put, path, body, anonymous: false);
+    }
+
+    /// <summary>DELETE sans réponse attendue (204).</summary>
+    public async Task DeleteAsync(string path)
+    {
+        using var response = await SendAsync(HttpMethod.Delete, path, body: null, anonymous: false);
+    }
+
     // ----- Interne -----
 
     private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, object? body, bool anonymous)

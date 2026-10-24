@@ -1,6 +1,9 @@
-# BudgetEtu — frontend .NET MAUI
+# BudgetEtu — application .NET MAUI + API ASP.NET Core
 
-Application de gestion de budget étudiant en FCFA. Frontend uniquement : les données viennent de services simulés (`Services/AuthService.cs`, `Services/BudgetService.cs`).
+Application de gestion de budget étudiant en FCFA, en deux parties :
+
+- **`BudgetEtu.csproj`** : l'application mobile / Windows (.NET MAUI, XAML + MVVM, Shell), construite d'après les maquettes ;
+- **`BudgetEtu.Api/`** : le serveur (ASP.NET Core Web API + base SQLite + authentification JWT) que l'application appelle. Voir la section « Backend » plus bas.
 
 ## Écrans (maquettes → fichiers)
 
@@ -20,6 +23,8 @@ Autres fichiers clés : `AppShell.xaml` (navigation), `Resources/Styles/AppStyle
 Composants réutilisables (`Controls/`) : `FormField` (champ + erreur), `ErrorBanner` (bandeau d'erreur/succès), `ErrorView` (écran d'erreur / état vide plein cadre), `DropDown` (liste ▾), `BottomNavBar` (barre du bas avec le bouton +).
 
 ## Lancer
+
+**Ordre : d'abord le serveur (section « Backend »), puis l'application.** Sans serveur, l'application affiche l'écran « Le serveur ne répond pas ». Pour une démo sans serveur, passer `UseRealApi` à `false` dans `MauiProgram.cs` (données fictives en mémoire).
 
 ### Sur PC Windows (sans SDK Android)
 
@@ -62,6 +67,53 @@ Détail en tête de `AppStyles.xaml` : une seule famille de vert, une seule fami
 
 Données fictives : une 3e catégorie « Logement » (15 000 / 20 000) complète l'écran Budgets pour que le total 75 000 / 100 000 de la maquette soit égal à la somme des catégories. Les totaux de l'écran Accueil (150 000 / 200 000 / 50 000) sont ceux de la maquette ; ils ne sont pas reliés aux budgets (les maquettes ne sont pas cohérentes entre elles sur ce point).
 
-## Brancher le vrai backend
+## Backend (`BudgetEtu.Api/`)
 
-Remplacer `AuthService` et `BudgetService` (interfaces `IAuthService`, `IBudgetService`) et faire lever `AppException(ErrorKind.…)` : les écrans affichent déjà la bonne réaction.
+ASP.NET Core 9 Web API, base **SQLite** (fichier `budgetetu.db` créé au premier lancement, rien à installer), authentification par jeton **JWT**, mots de passe hachés.
+
+### Lancer le serveur
+
+```
+cd BudgetEtu.Api
+dotnet run
+```
+
+Il écoute sur `http://localhost:5080`. La page **http://localhost:5080/swagger** permet de tester toutes les routes (bouton « Authorize » : coller le jeton renvoyé par `/api/auth/login`). Au premier démarrage, le compte de démonstration `etudiant@univ.cm` / `budget123` est créé avec ses transactions et ses budgets.
+
+Si le schéma de la base change dans une future version, supprimer `BudgetEtu.Api/budgetetu.db` : elle est recréée au prochain lancement.
+
+### Routes
+
+| Route | Rôle | Jeton |
+|---|---|---|
+| `POST /api/auth/register` | créer un compte (3 enveloppes par défaut) | non |
+| `POST /api/auth/login` | connexion, renvoie le jeton | non |
+| `POST /api/auth/forgot-password` | génère un jeton de réinitialisation (affiché dans la console du serveur, faute de serveur d'e-mails) | non |
+| `POST /api/auth/reset-password` | nouveau mot de passe avec ce jeton | non |
+| `GET /api/me` · `POST /api/me/change-password` | profil, changement de mot de passe | oui |
+| `GET /api/dashboard` | solde, revenus, dépenses, 5 dernières transactions | oui |
+| `GET` · `POST /api/transactions` · `DELETE /api/transactions/{id}` | liste, saisie, suppression | oui |
+| `GET /api/budgets?month=AAAA-MM` · `POST` · `PUT` · `DELETE /api/budgets/{id}` | enveloppes et consommation du mois | oui |
+| `GET /api/alerts` | alertes calculées (budget ≥ 80 %, rappel de saisie, bonne nouvelle) | oui |
+
+Chaque utilisateur ne voit que ses propres données.
+
+### Comment l'application l'utilise
+
+- `Services/ApiClient.cs` : seul endroit qui parle HTTP. Ajoute le jeton, et transforme les erreurs en `AppException` : serveur arrêté ou délai dépassé → écran « Le serveur ne répond pas », pas de réseau → « Pas de connexion », 401 sur une route protégée → « Session expirée », 400/409 → message du serveur (ex. « Un compte existe déjà avec cette adresse e-mail. »).
+- `Services/ApiAuthService.cs` et `Services/ApiBudgetService.cs` : implémentent les mêmes interfaces `IAuthService` / `IBudgetService` que les services fictifs. Les ViewModels et les écrans n'ont pas changé.
+- Le jeton est gardé en mémoire : il faut se reconnecter à chaque lancement de l'application.
+- Adresse du serveur : `Services/ApiSettings.cs` (`localhost:5080` sur Windows, `10.0.2.2:5080` sur l'émulateur Android ; pour un vrai téléphone, l'adresse IP du PC).
+- Le menu **Démo** fonctionne toujours : il force les états d'erreur sans avoir à arrêter le serveur.
+
+### Données de démonstration
+
+Les maquettes ne sont pas cohérentes entre elles (Accueil : 50 000 FCFA de dépenses, Budgets : 75 000 FCFA dépensés). Avec un vrai serveur, tout est calculé à partir des mêmes transactions : le compte de démo affiche donc **75 000 FCFA** de dépenses et un solde de **125 000 FCFA** sur l'Accueil, et les budgets des maquettes (Nourriture 45 000 / 50 000, Transport 15 000 / 30 000, Logement 15 000 / 20 000).
+
+### Pas encore fait
+
+- Écran de changement de mot de passe (la route `POST /api/me/change-password` existe, pas encore l'écran) ;
+- écrans pour créer / modifier / supprimer une enveloppe de budget (les routes existent) ;
+- suppression d'une transaction depuis l'application (la route existe) ;
+- envoi réel du lien « mot de passe oublié » par e-mail ;
+- hébergement du serveur en ligne.

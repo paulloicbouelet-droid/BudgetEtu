@@ -50,4 +50,12 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 	</ItemGroup>
 
+	<!-- Le serveur BudgetEtu.Api est un projet à part : ses fichiers ne font pas partie de l'application MAUI -->
+	<ItemGroup>
+		<Compile Remove="BudgetEtu.Api\**" />
+		<EmbeddedResource Remove="BudgetEtu.Api\**" />
+		<MauiXaml Remove="BudgetEtu.Api\**" />
+		<None Remove="BudgetEtu.Api\**" />
+	</ItemGroup>
+
 </Project>

@@ -10,11 +10,9 @@ public enum DemoScenario
 }
 
 /// <summary>
-/// Simule les conditions réseau/serveur tant qu'il n'y a pas de vrai backend.
-/// Menu caché pour tester tous les écrans d'erreur : appuyer 5 fois sur le titre « Mon Profil ».
-///
-/// Quand tu brancheras une vraie API, remplace <see cref="EnterAsync"/> par un vrai test
-/// (Connectivity.Current.NetworkAccess, codes HTTP…) qui lève les mêmes <see cref="AppException"/>.
+/// Menu de démonstration pour provoquer les écrans d'erreur (hors ligne, erreur serveur, session expirée,
+/// aucune donnée) sans avoir à couper le serveur. Ouverture : menu « Démo » (Windows) ou 5 appuis sur un titre.
+/// En fonctionnement normal, ce mécanisme ne fait rien : les vraies erreurs viennent de <see cref="ApiClient"/>.
 /// </summary>
 public static class Simulation
 {
@@ -23,7 +21,11 @@ public static class Simulation
     /// <summary>À appeler au début de chaque appel de service.</summary>
     public static async Task EnterAsync(bool requiresSession = true)
     {
-        await Task.Delay(600); // latence réseau simulée, pour voir l'état « chargement »
+        // Fonctionnement normal : rien à simuler (avec le vrai serveur, la vraie latence suffit).
+        if (Scenario == DemoScenario.Normal)
+            return;
+
+        await Task.Delay(600); // latence simulée, pour voir l'état « chargement » avant l'erreur
 
         switch (Scenario)
         {

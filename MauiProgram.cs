@@ -6,6 +6,9 @@ namespace BudgetEtu;
 
 public static class MauiProgram
 {
+    // Champ (et non constante) pour éviter l'avertissement « code inaccessible » quand on change la valeur.
+    private static readonly bool UseRealApi = true;
+
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
@@ -22,9 +25,21 @@ public static class MauiProgram
 
         ConfigureHandlers();
 
-        // Services (données fictives en attendant le backend)
-        builder.Services.AddSingleton<IAuthService, AuthService>();
-        builder.Services.AddSingleton<IBudgetService, BudgetService>();
+        // ----- Services -----
+        // true  : l'application parle au serveur BudgetEtu.Api (à lancer avant : voir README).
+        // false : services fictifs en mémoire (AuthService / BudgetService), sans serveur : pratique pour une démo hors ligne.
+        if (UseRealApi)
+        {
+            builder.Services.AddSingleton(new HttpClient { Timeout = TimeSpan.FromSeconds(10) });
+            builder.Services.AddSingleton<ApiClient>();
+            builder.Services.AddSingleton<IAuthService, ApiAuthService>();
+            builder.Services.AddSingleton<IBudgetService, ApiBudgetService>();
+        }
+        else
+        {
+            builder.Services.AddSingleton<IAuthService, AuthService>();
+            builder.Services.AddSingleton<IBudgetService, BudgetService>();
+        }
 
         // ViewModels 
         builder.Services.AddTransient<LoginViewModel>();
@@ -66,22 +81,32 @@ public static class MauiProgram
         Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, _) => Clear(handler.PlatformView));
         Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, _) => Clear(handler.PlatformView));
 #elif WINDOWS
-        // WinUI dessine sa propre bordure/fond sur les champs : on les rend transparents,
+                // WinUI dessine sa propre bordure/fond sur les champs : on les rend transparents,
         // le cadre arrondi (Border) des maquettes les remplace.
+        // Purement cosmétique : toute erreur ici est ignorée, pour ne jamais empêcher l'ouverture d'un écran.
         static void Flatten(Microsoft.UI.Xaml.Controls.Control control, params string[] prefixes)
         {
-            var transparent = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
-            control.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
+            static void TrySet(Microsoft.UI.Xaml.ResourceDictionary resources, string key, object value)
+            {
+                try { resources[key] = value; }
+                catch { /* clé refusée par ce contrôle : on l'ignore */ }
+            }
+
+            static Microsoft.UI.Xaml.Media.SolidColorBrush NewTransparent()
+                => new(Microsoft.UI.Colors.Transparent);
+
+            try { control.BorderThickness = new Microsoft.UI.Xaml.Thickness(0); }
+            catch { /* ignoré */ }
 
             foreach (var prefix in prefixes)
             foreach (var state in new[] { "", "PointerOver", "Pressed", "Focused", "Disabled" })
             {
-                control.Resources[$"{prefix}Background{state}"] = transparent;
-                control.Resources[$"{prefix}BorderBrush{state}"] = transparent;
+                TrySet(control.Resources, $"{prefix}Background{state}", NewTransparent());
+                TrySet(control.Resources, $"{prefix}BorderBrush{state}", NewTransparent());
             }
 
-            control.Resources["TextControlBorderThemeThickness"] = new Microsoft.UI.Xaml.Thickness(0);
-            control.Resources["TextControlBorderThemeThicknessFocused"] = new Microsoft.UI.Xaml.Thickness(0);
+            TrySet(control.Resources, "TextControlBorderThemeThickness", new Microsoft.UI.Xaml.Thickness(0));
+            TrySet(control.Resources, "TextControlBorderThemeThicknessFocused", new Microsoft.UI.Xaml.Thickness(0));
         }
 
         Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Flat", (handler, _) => Flatten(handler.PlatformView, "TextControl"));

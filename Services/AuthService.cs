@@ -8,6 +8,7 @@ public interface IAuthService
     Task LoginAsync(string email, string password);
     Task RegisterAsync(string fullName, string email, string password);
     Task SendResetLinkAsync(string email);
+    Task ChangePasswordAsync(string currentPassword, string newPassword);
     void Logout();
 }
 
@@ -59,6 +60,26 @@ public class AuthService : IAuthService
 
         if (!_users.Any(u => string.Equals(u.Email, email.Trim(), StringComparison.OrdinalIgnoreCase)))
             throw new AppException(ErrorKind.Validation, "Aucun compte n'est associé à cette adresse e-mail.");
+    }
+
+    public async Task ChangePasswordAsync(string currentPassword, string newPassword)
+    {
+        await Simulation.EnterAsync();
+
+        var index = _users.FindIndex(u =>
+            string.Equals(u.Email, CurrentUser?.Email, StringComparison.OrdinalIgnoreCase));
+
+        if (index < 0)
+            throw new AppException(ErrorKind.SessionExpired, "Ta session a expiré.");
+
+        if (_users[index].Password != currentPassword)
+            throw new AppException(ErrorKind.Validation, "Le mot de passe actuel est incorrect.");
+
+        if (newPassword.Length < 6)
+            throw new AppException(ErrorKind.Validation, "Le nouveau mot de passe doit contenir au moins 6 caractères.");
+
+        var user = _users[index];
+        _users[index] = (user.FullName, user.Email, newPassword);
     }
 
     public void Logout() => CurrentUser = null;

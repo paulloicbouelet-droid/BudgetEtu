@@ -41,6 +41,9 @@ public class ApiAuthService : IAuthService
     public Task SendResetLinkAsync(string email)
         => _api.PostAsync("api/auth/forgot-password", new { email = email.Trim() }, anonymous: true);
 
+    public Task ChangePasswordAsync(string currentPassword, string newPassword)
+        => _api.PostAsync("api/me/change-password", new { currentPassword, newPassword });
+
     public void Logout()
     {
         _api.Token = null;

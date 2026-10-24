@@ -35,11 +35,7 @@ public partial class ProfileViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private Task ChangePassword()
-        => Shell.Current.DisplayAlert(
-            "Changer le mot de passe",
-            "Cette fonctionnalité sera disponible lorsque l'application sera reliée au serveur.",
-            "OK");
+    private Task ChangePassword() => Shell.Current.GoToAsync("ChangePassword");
 
     [RelayCommand]
     private async Task Logout()

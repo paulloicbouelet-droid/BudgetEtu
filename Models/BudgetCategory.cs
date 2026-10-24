@@ -4,6 +4,9 @@ namespace BudgetEtu.Models;
 
 public class BudgetCategory
 {
+    /// <summary>Identifiant de l'enveloppe (sert à la modifier / la supprimer).</summary>
+    public Guid Id { get; init; } = Guid.NewGuid();
+
     public string Emoji { get; init; } = string.Empty;
     public string Name { get; init; } = string.Empty;
     public decimal Spent { get; set; }

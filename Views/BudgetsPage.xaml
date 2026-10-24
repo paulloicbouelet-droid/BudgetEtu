@@ -53,7 +53,13 @@
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:BudgetCategory">
                                     <VerticalStackLayout Spacing="6">
-                                        <Label Text="{Binding Title}" Style="{StaticResource FieldLabel}" FontSize="15" />
+                                        <VerticalStackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnCategoryTapped" />
+                                        </VerticalStackLayout.GestureRecognizers>
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label Text="{Binding Title}" Style="{StaticResource FieldLabel}" FontSize="15" />
+                                            <Label Grid.Column="1" Text="✏️" FontSize="14" VerticalOptions="Center" />
+                                        </Grid>
                                         <Label Text="{Binding SpentText}" />
                                         <ProgressBar Progress="{Binding Progress}">
                                             <ProgressBar.Triggers>
@@ -67,6 +73,13 @@
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
+
+                        <Label Text="Touche une enveloppe pour la modifier ou la supprimer."
+                               Style="{StaticResource Subtitle}" FontSize="12" Margin="0,22,0,0" />
+
+                        <Button Text="+ Nouvelle enveloppe"
+                                Command="{Binding AddBudgetCommand}"
+                                Margin="0,14,0,0" />
 
                     </VerticalStackLayout>
                 </ScrollView>

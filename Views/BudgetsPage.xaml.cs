@@ -1,3 +1,4 @@
+using BudgetEtu.Models;
 using BudgetEtu.ViewModels;
 
 namespace BudgetEtu.Views;
@@ -16,5 +17,11 @@ public partial class BudgetsPage : ContentPage
     {
         base.OnAppearing();
         _viewModel.LoadCommand.Execute(null);
+    }
+
+    private void OnCategoryTapped(object? sender, TappedEventArgs e)
+    {
+        if (sender is BindableObject { BindingContext: BudgetCategory category })
+            _viewModel.EditBudgetCommand.Execute(category);
     }
 }

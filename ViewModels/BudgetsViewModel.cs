@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using BudgetEtu.Models;
 using BudgetEtu.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace BudgetEtu.ViewModels;
 
@@ -30,6 +31,17 @@ public partial class BudgetsViewModel : ViewModelBase
     protected override string EmptyIcon => "📊";
     protected override string EmptyTitle => "Aucun budget défini";
     protected override string EmptyMessage => "Tes budgets par catégorie apparaîtront ici dès que tu en auras créé.";
+    protected override string EmptyActionText => "Créer une enveloppe";
+
+    protected override Task OnEmptyActionAsync() => Shell.Current.GoToAsync("BudgetForm");
+
+    [RelayCommand]
+    private Task AddBudget() => Shell.Current.GoToAsync("BudgetForm");
+
+    /// <summary>Touche sur une enveloppe : ouvre le formulaire pour la modifier ou la supprimer.</summary>
+    [RelayCommand]
+    private Task EditBudget(BudgetCategory category)
+        => Shell.Current.GoToAsync("BudgetForm", new ShellNavigationQueryParameters { ["Budget"] = category });
 
     partial void OnSelectedMonthChanged(string value) => LoadCommand.Execute(null);
 

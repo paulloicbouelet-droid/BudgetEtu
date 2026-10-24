@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="BudgetEtu.Views.BudgetFormPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:BudgetEtu.Controls"
+    xmlns:vm="clr-namespace:BudgetEtu.ViewModels"
+    x:DataType="vm:BudgetFormViewModel"
+    Title="Enveloppe de budget"
+    Shell.NavBarIsVisible="False">
+
+    <!-- Écran ajouté : création / modification d'une enveloppe (même style que la saisie de transaction). -->
+    <Grid RowDefinitions="Auto,*,Auto" Padding="24,32,24,20" RowSpacing="12">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <Label Text="{Binding PageTitle}" Style="{StaticResource ScreenTitle}" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="✕" TextColor="{StaticResource Expense}" FontSize="22" Padding="12,6">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="18">
+
+                <controls:ErrorBanner Message="{Binding BannerMessage}" />
+
+                <!-- Icône -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Icône :" Style="{StaticResource FieldLabel}" />
+                    <Border Style="{StaticResource InputBorder}">
+                        <controls:DropDown
+                            Title="Choisis une icône"
+                            ItemsSource="{Binding Emojis}"
+                            SelectedItem="{Binding SelectedEmoji}" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <controls:FormField
+                    Title="Nom de l'enveloppe :"
+                    Placeholder="Nourriture"
+                    Text="{Binding Name}"
+                    ErrorMessage="{Binding NameError}" />
+
+                <controls:FormField
+                    Title="Plafond mensuel (FCFA) :"
+                    Placeholder="50000"
+                    Suffix="FCFA"
+                    Keyboard="Numeric"
+                    Text="{Binding LimitText}"
+                    ErrorMessage="{Binding LimitError}" />
+
+                <Label Style="{StaticResource Subtitle}" FontSize="13"
+                       Text="Astuce : une dépense de catégorie « Nourriture / Rations » est comptée dans l'enveloppe « Nourriture »." />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="10">
+            <Button Text="{Binding SaveText}"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsNotBusy}" />
+            <Button Text="Supprimer cette enveloppe" Style="{StaticResource DangerButton}"
+                    Command="{Binding DeleteCommand}"
+                    IsVisible="{Binding IsEditing}"
+                    IsEnabled="{Binding IsNotBusy}" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

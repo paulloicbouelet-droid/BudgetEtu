@@ -95,6 +95,11 @@
                                                     </DataTrigger>
                                                 </Label.Triggers>
                                             </Label>
+                                            <Label Text="🗑" Style="{StaticResource PillText}" Padding="6,0,0,0">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnDeleteTransactionTapped" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
                                         </HorizontalStackLayout>
                                     </Border>
                                 </DataTemplate>

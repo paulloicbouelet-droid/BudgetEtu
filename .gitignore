@@ -2,3 +2,8 @@ bin/
 obj/
 .vs/
 *.user
+
+# Base SQLite de l'API (créée au premier lancement)
+*.db
+*.db-shm
+*.db-wal

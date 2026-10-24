@@ -9,7 +9,7 @@
     x:DataType="vm:TransactionViewModel"
     Title="Nouvelle transaction"
     Shell.NavBarIsVisible="False"
-    Shell.PresentationMode="ModalAnimated">
+    Shell.PresentationMode="Animated">
 
     <!-- Maquettes 4_SaisieTransaction et 4_SaisieTransaction_Erreur -->
     <Grid RowDefinitions="Auto,*,Auto" Padding="24,32,24,20" RowSpacing="12">
